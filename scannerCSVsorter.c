@@ -21,7 +21,7 @@ check_parameters(argc, argv);
 get_directory_path(3, 4,"-d", search_dir, argc, argv);
 //printf("\"%s\"\n", search_dir_path);
 get_directory_path(5, 6,"-o", output_dir, argc, argv);
-create_sorted_csv_file();
+//create_sorted_csv_file();
 
 return 0;
 
@@ -115,6 +115,7 @@ void check_file_extension() {
 
     if(strcmp(extension, ".csv") == 0) {
         //check CSV format
+        trim_filename(filename);
     }
 
     //printf("\'%s\'\n", extension);
@@ -139,7 +140,7 @@ void rename_sorted_csv(char *trimmed_filename) {
     strcat(sorted_filename, "-sorted-");
     strcat(sorted_filename, sort_by);
     strcat(sorted_filename, ".csv");
-    //printf("%s\n", sorted_filename);
+    printf("%s\n", sorted_filename);
     memset(sorted_filename, 0, sizeof(sorted_filename));
 
 }
@@ -152,7 +153,6 @@ void create_sorted_csv_file() {
 
     printf("%s\n", output_file_path);
 
-    //FILE *outfile = fopen("%s/%s", output_dir_path, sorted_filename,"w");
 }
 
 
