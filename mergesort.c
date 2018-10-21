@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
+#include "simpleCSVsorter.h"
 int compare(movie_data* in1,  movie_data* in2, char* header){
 	char* val1 = getStringValues(*in1,header);
 	char* val2 = getStringValues(*in2,header);
