@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+//#include "scannerCSVsorter.h"
 
 int compare(movie_data* in1,  movie_data* in2, char* header){
 	char* val1 = getStringValues(*in1,header);
@@ -53,7 +54,7 @@ movie_data* mergeSort(movie_data* head, char* searchColumn){
 		if(l1!=NULL){
             		l1=l1->next;
         	}
-		
+
             }
             if(cmp==0){
                 temp = l1;
@@ -88,6 +89,6 @@ movie_data* mergeSort(movie_data* head, char* searchColumn){
         }
     }
 	return newHead;
-	
+
 
 }
