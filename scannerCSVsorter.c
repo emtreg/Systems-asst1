@@ -30,21 +30,17 @@ int header_comma_count = 0;
 int header_match;
 int comma_match;
 int valid_csv = 1;
-
+char *headers_string;
 
 
 int main(int argc, char *argv[]) {
 
 check_parameters(argc, argv);
 check_sort_by();
-
 get_directory_paths(argc, argv);
-
-printf("\"%s\"\n", search_dir_path);
-printf("\"%s\"\n", output_dir_path);
-
 create_sorted_csv(sorted_filename);
-//printf("\"%s\"\n", output_file_path);
+
+free(filename);
 
 return 0;
 
@@ -93,7 +89,7 @@ void get_directory_paths(int argc, char *argv[]) {
         search_dir = opendir(".");
         getcwd(search_dir_path, sizeof(cwd));
 
-        printf("No directory specified. Using current directory\n");
+        printf("No directory specified. Using current directory.\n");
 
         output_dir = opendir(".");
         getcwd(output_dir_path, sizeof(cwd));
@@ -102,12 +98,12 @@ void get_directory_paths(int argc, char *argv[]) {
 
     } else if(argc == 4 && strcmp(argv[3], "-d") == 0) {
 
-        printf("Please specify search directory.\n");
+        fprintf(stderr, "%s", "Please specify search directory.\n");
         exit(-1);
 
     } else if(argc == 4 && strcmp(argv[3], "-o") == 0) {
 
-        printf("Please specify output directory.\n");
+        fprintf(stderr, "%s", "Please specify output directory.\n");
         exit(-1);
 
     } else if(argc == 5 && strcmp(argv[3], "-o") == 0) {
@@ -130,7 +126,7 @@ void get_directory_paths(int argc, char *argv[]) {
 
     } else if(argc == 6 && strcmp(argv[5], "-o") == 0) {
 
-        printf("Please specify output directory.\n");
+        fprintf(stderr, "%s", "Please specify output directory.\n");
         exit(-1);
 
     } else if(argc >= 7 && strcmp(argv[3], "-d") == 0 && strcmp(argv[5], "-o") == 0) {
@@ -150,15 +146,14 @@ void check_directory_exists(DIR *dir, char* path) {
     struct dirent *ent;
 
     if(!dir) {
-        printf("Unable to access directory. Shutting down.\n");
+        fprintf(stderr, "Unable to access directory. Ending program.\n");
         exit(-1);
 
     } else {
-        printf("Directory exists\n");
 
         while ((ent = readdir (dir)) != NULL) {
             filename = strdup(ent->d_name);
-            printf("\"%s\"\n", filename);
+            //printf("\"%s\"\n", filename);
             check_file_extension();
         }
 
@@ -178,8 +173,6 @@ void check_file_extension() {
     if(strcmp(extension, ".csv") == 0) {
         check_csv_format();
     }
-
-    printf("\'%s\'\n", extension);
 }
 
 
@@ -189,8 +182,10 @@ void trim_filename() {
     trimmed_filename = strdup(filename);
     int len = strlen(trimmed_filename);
     trimmed_filename[len-4] = '\0';
-    //printf("\"%s\"\n", trimmed_filename);
+
     rename_sorted_csv(trimmed_filename);
+
+    free(trimmed_filename);
 
 }
 
@@ -201,7 +196,6 @@ void rename_sorted_csv(char *trimmed_filename) {
     strcat(sorted_filename, "-sorted-");
     strcat(sorted_filename, sort_by);
     strcat(sorted_filename, ".csv");
-    printf("%s\n", sorted_filename);
     memset(sorted_filename, 0, sizeof(sorted_filename));
 }
 
@@ -236,6 +230,8 @@ char* trimwhitespace (char *str) {
     }
 
     return str_copy;
+
+    free(str_copy);
 }
 
 void push (movie_data *new_node) {
@@ -287,8 +283,6 @@ void store_headers(char *headers) {
     header[index] = '\0';
     strcpy(headers_array[count++], trimwhitespace(header));
 
-
-
     while(strcmp(headers_array[n], "") != 0) {
 
         for(m = 0; m <= 27; m++) {
@@ -300,7 +294,6 @@ void store_headers(char *headers) {
         }
 
         if(header_match == 0) {
-            printf("Not valid CSV\n");
             valid_csv = 0;
             return;
         }
@@ -327,7 +320,6 @@ void check_sort_by_csv() {
     }
 
     if(match_found == 0) {
-        fprintf(stderr, "%s", "Not valid CSV.\n");
         valid_csv = 0;
         return;
     }
@@ -367,8 +359,6 @@ void build_movie_data_node(char *data_str) {
     }
 
     if(comma_count != header_comma_count) {
-
-        printf("Not valid CSV\n");
         valid_csv = 0;
         return;
     }
@@ -381,7 +371,6 @@ void build_movie_data_node(char *data_str) {
     output->raw_row = strdup(data_str);
 
     push(output);
-
 }
 
 
@@ -445,6 +434,10 @@ void assign_output(movie_data *output, int index, char *value) {
     }
 }
 
+char* get_headers_str() {
+
+    return headers_string;
+}
 
 
 void check_csv_format() {
@@ -458,12 +451,14 @@ void check_csv_format() {
     }
 
     else if(valid_csv == 1) {
-        printf("Valid CSV\n");
+
+        get_headers_str();
         movie_data *movie_node = parse_csv();
         trim_filename();
 
     }
 
+    free(headers_string);
 }
 
 
@@ -497,18 +492,21 @@ f = fopen(filename, mode);
         char_count++;
 
         if(current_char == '\n') {
-            char *tmp_str = malloc(sizeof(char) *(char_count + 1));
+
+        char *tmp_str = malloc(sizeof(char) *(char_count + 1));
+
             strcpy(tmp_str, row);
 
             if(row_count == 0) {
                 store_headers(tmp_str);
                 check_sort_by_csv();
-                printf("%s\n", tmp_str);
+                headers_string = strdup(tmp_str);
+                //printf("%s\n", tmp_str);
             } else {
                 build_movie_data_node(tmp_str);
             }
 
-            printf("\"%s\"\n", trimwhitespace(tmp));
+            //printf("\"%s\"\n", trimwhitespace(tmp));
             free(tmp_str);
 
             buffer_size = 0;
@@ -550,17 +548,3 @@ f = fopen(filename, mode);
     return 0;
 
 }
-
-
- /*if(argc > path_index) {
-
-        if(strcmp(argv[flag_index], flag) == 0) {
-           strcpy(dir_path, argv[argv_index]);
-            check_directory_exists(dir, dir_path);
-        } else {
-            fprintf(stderr, "\"%s\" not present.\n", flag); //-o <directory> (use default behavior for -d), -d fatal error
-            exit(-1);
-        }
-
-    } */
-
