@@ -139,4 +139,3 @@ double getNumericalValue(movie_data head, char* header){
 
 
 
-
