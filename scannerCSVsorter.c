@@ -49,16 +49,17 @@ int  listdir(const char *name)
       char *suffix = strrchr(cursor->d_name, '.');
       child=fork();
       if(child==0){
-        printf("%d,", cursor->d_name,getpid());
-        fflush(stdout);
+        
         //TODO Check for valid FORMAT
         char path[1024];
         strcpy(path,name);
         strcat(path,"/");
         strcat(path,cursor->d_name);
+	printf("%s %d,", path,getpid());
+        fflush(stdout);
         movie_data* head = parse_csv(path);
-	if(head==NULL){
-		printf("WRONG");
+	if(head!=NULL){
+		printf("RIGHT");
 	}
         //TODO SORT FUNCTION HERE
         exit(1);
@@ -75,6 +76,7 @@ int  listdir(const char *name)
 }
 
 int main(int argc, char *argv[]) {
+  printf("%d\n",argc);
   check_parameters(argc, argv);
   check_sort_by();
   get_directory_paths(argc, argv);
@@ -90,5 +92,9 @@ int main(int argc, char *argv[]) {
   }
   //fflush(stdout);
   printf("\nTotal number of processes: %d\n",end);
+  movie_data* head = parse_csv("movie_metadata.csv");
+	if(head==NULL){
+		printf("RIGHT");
+	}
   return 1;
 }
