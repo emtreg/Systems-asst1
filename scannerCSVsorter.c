@@ -6,7 +6,32 @@
 #include <string.h>
 #include <sys/wait.h>
 #include "scannerCSVsorter.h"
-int  listdir(const char *name)
+
+int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationPath){
+	char path[1024];
+	strcpy(path,destinationPath);
+	strcat(path,"/");
+	strcat(path,name);
+	int i = 0;
+    	while(path[i] != '\0')
+    	{
+        	i++;
+         
+    	}
+    	path[i-4] = '\0';
+	strcat(path,"-sorted-");
+	strcat(path,sortingHead);
+	strcat(path,".csv");
+	FILE *fp = fopen(name, "ab+");
+	movie_data* cur = head;
+	while(cur!=NULL){
+		fprintf(fp,"%s\n",cur->raw_row);
+		cur = cur->next;
+	}
+	return 1;
+}
+
+int listdir(const char *name)
 {
   DIR *dir;
   struct dirent *cursor;
