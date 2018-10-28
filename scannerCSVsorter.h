@@ -53,10 +53,9 @@ char cwd[256];
 char headers_array[NUM_HEADERS][256];
 
 movie_data *front;
-int pos_sort;
+//int pos_sort;
 char headers_array[NUM_HEADERS][256];
-int header_comma_count = 0;
-int header_match;
+//int header_comma_count = 0;
 int comma_match;
 int valid_csv = 1;
 char *headers_string;
@@ -128,9 +127,9 @@ void check_csv_format();
     movie_data* get_last_node();
     char* trimwhitespace (char *str);
     void push (movie_data *new_node);
-    void store_headers(char *headers);
+    void store_headers(char *headers, int header_comms_count);
     void check_sort_by_csv();
-    void build_movie_data_node(char *data_str);
+    void build_movie_data_node(char *data_str, int header_comma_count);
     void assign_output(movie_data *output, int index, char *value);
     movie_data* parse_csv(char *filename);
 /*
@@ -271,6 +270,7 @@ void get_directory_paths(int argc, char *argv[]) {
 
         search_dir = opendir(".");
         getcwd(search_dir_path, sizeof(cwd));
+        check_file_extension(search_dir, search_dir_path);
 
         printf("No directory specified. Using current directory.\n");
 
@@ -294,6 +294,7 @@ void get_directory_paths(int argc, char *argv[]) {
         search_dir = opendir(".");
         getcwd(search_dir_path, sizeof(cwd));
         printf("No directory specified. Using current directory\n");
+        check_file_extension(search_dir, search_dir_path);
 
         strcpy(output_dir_path, argv[4]);
         check_directory_exists(output_dir, output_dir_path);
@@ -302,6 +303,7 @@ void get_directory_paths(int argc, char *argv[]) {
 
         strcpy(search_dir_path, argv[4]);
         check_directory_exists(search_dir, search_dir_path);
+        check_file_extension(search_dir, search_dir_path);
 
         output_dir = opendir(".");
         getcwd(output_dir_path, sizeof(cwd));
@@ -316,9 +318,16 @@ void get_directory_paths(int argc, char *argv[]) {
 
         strcpy(search_dir_path, argv[4]);
         check_directory_exists(search_dir, search_dir_path);
+        check_file_extension(search_dir, search_dir_path);
 
         strcpy(output_dir_path, argv[6]);
         check_directory_exists(output_dir, output_dir_path);
+
+    } else if(argc > 7) {
+
+        fprintf(stderr, "%s", "Invalid parameters.\n");
+        exit(-1);
+
     }
 }
 
@@ -326,42 +335,51 @@ void get_directory_paths(int argc, char *argv[]) {
 void check_directory_exists(DIR *dir, char* path) {
 
     dir = opendir(path);
-    struct dirent *ent;
 
     if(!dir) {
         fprintf(stderr, "Unable to access directory. Ending program.\n");
         exit(-1);
 
-    } else {
+        } else {
 
-        while ((ent = readdir (dir)) != NULL) {
-            filename = strdup(ent->d_name);
-            //printf("\"%s\"\n", filename);
-            check_file_extension();
+        printf("Directory exists.\n");
         }
 
+    closedir(dir);
+}
+
+
+void check_file_extension(DIR *dir, char *path) {
+
+    dir = opendir(path);
+    struct dirent *ent;
+
+    while ((ent = readdir (dir)) != NULL) {
+            filename = strdup(ent->d_name);
+
+            char *extension = strrchr(filename, '.');
+
+            if(!extension || extension == filename) {
+            extension = "";
+
+            }
+
+            if(strcmp(extension, ".csv") == 0) {
+            //check_csv_format();
+            printf("%s\n", filename);
+            //valid_csv = 1;
+            //parse_csv(filename);
+    }
+
+
+    }
+
         closedir (dir);
-    }
+
 }
 
 
-void check_file_extension() {
-
-    char *extension = strrchr(filename, '.');
-
-    if(!extension || extension == filename) {
-        extension = "";
-    }
-
-    if(strcmp(extension, ".csv") == 0) {
-        //check_csv_format();
-        valid_csv = 1;
-        parse_csv(filename);
-    }
-}
-
-
-void trim_filename() {
+void trim_filename(char *filename) {
 
     char *trimmed_filename;
     trimmed_filename = strdup(filename);
@@ -370,7 +388,7 @@ void trim_filename() {
 
     rename_sorted_csv(trimmed_filename);
 
-    free(trimmed_filename);
+    //free(trimmed_filename);
 
 }
 
@@ -435,7 +453,7 @@ movie_data* get_last_node() {
     return current;
 }
 
-void store_headers(char *headers) {
+void store_headers(char *headers, int header_comma_count) {
 
     int str_length = strlen(headers);
     int count = 0;
@@ -468,24 +486,34 @@ void store_headers(char *headers) {
     header[index] = '\0';
     strcpy(headers_array[count++], trimwhitespace(header));
 
+    /*
+
     while(strcmp(headers_array[n], "") != 0) {
+
+
 
         for(m = 0; m <= 27; m++) {
 
             if(strcmp(headers_array[n], movie_headers[m]) == 0) {
                 header_match = 1;
+                printf("%s\n", headers_array[n]);
                 break;
             }
         }
 
         if(header_match == 0) {
             valid_csv = 0;
+            printf("Here\n");
+            printf("%s\n", headers_array[n]);
             return;
         }
+
 
         header_match = 0;
         n++;
     }
+
+    */
 
     header_comma_count = comma_count;
 }
@@ -499,19 +527,22 @@ void check_sort_by_csv() {
 
     for(i = 0; i < NUM_HEADERS; i ++) {
         if(strcmp(headers_array[i], sort_by) == 0) {
-            pos_sort = i;
+            int pos_sort = i;
             match_found = 1;
         }
     }
 
+    /*
     if(match_found == 0) {
         valid_csv = 0;
         return;
     }
 
+    */
+
 }
 
-void build_movie_data_node(char *data_str) {
+void build_movie_data_node(char *data_str, int header_comma_count) {
 
     int str_length = strlen(data_str);
     char row_element[str_length];
@@ -543,10 +574,13 @@ void build_movie_data_node(char *data_str) {
         }
     }
 
+    /*
     if(comma_count != header_comma_count) {
         valid_csv = 0;
         return;
     }
+
+    */
 
     comma_count = 0;
 
@@ -652,11 +686,15 @@ void check_csv_format() {
 
 movie_data* parse_csv(char *filename) {
 
+printf("%s\n", filename);
+
 char *mode = "r";
 
 FILE *f;
 
 f = fopen(filename, mode);
+
+printf("%s\n", filename);
 
     front = NULL;
     front = malloc(sizeof(movie_data)); //initialization and memory allocation for front node
@@ -668,6 +706,7 @@ f = fopen(filename, mode);
     char *tmp;
     char *row;
     movie_data *output;
+    int header_comma_count = 0;
 
     row = malloc(sizeof(char) * (buffer_size+1));
     row[buffer_size++] = '\0';
@@ -687,16 +726,16 @@ f = fopen(filename, mode);
             strcpy(tmp_str, row);
 
             if(row_count == 0) {
-                store_headers(tmp_str);
+                store_headers(tmp_str, header_comma_count);
                 check_sort_by_csv();
 
                 output = malloc(sizeof(movie_data));
                 output->raw_row = strdup(tmp_str);
                 push(output);
 
-                //printf("%s\n", tmp_str);
+                printf("%s\n", tmp_str);
             } else {
-                build_movie_data_node(tmp_str);
+                build_movie_data_node(tmp_str, header_comma_count);
             }
 
             //printf("\"%s\"\n", trimwhitespace(tmp));
@@ -725,13 +764,13 @@ f = fopen(filename, mode);
 
     free(row);
 
-    if(valid_csv == 1) {
+    //if(valid_csv == 1) {
 
-    //printf("%s\n", front->next->raw_row);
+    //printf("%s\n", front->raw_row);
 
-    return (front->next->next);
+    return (front->next);
 
-    }
+    //}
 
     //movie_data* n = mergeSort(front->next, sort_by);
 
