@@ -6,7 +6,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include "scannerCSVsorter.h"
-
+#include "mergesort.c"
 int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationPath){
 	char path[1024];
 	strcpy(path,destinationPath);
@@ -24,14 +24,67 @@ int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationP
 	strcat(path,".csv");
 	FILE *fp = fopen(name, "ab+");
 	movie_data* cur = head;
+	i=0;
 	while(cur!=NULL){
 		fprintf(fp,"%s\n",cur->raw_row);
 		cur = cur->next;
+		i++;
 	}
-	return 1;
+	fclose(fp);
+	return i;
 }
 
-int listdir(const char *name)
+int checkIfValid(char* path, char* sortColumn){
+    if(strstr(path,"-sorted-")!=NULL)
+	return -1;
+    if(strcmp(strchr(path,'.'),".csv")!=0)
+	return -2;
+    FILE *fp = fopen(path,"r");
+    char buffer[1024];
+    if(fp){
+	while (fgets(buffer, sizeof(buffer), fp) != NULL)
+    	{	
+        	buffer[strlen(buffer) - 1] = '\0'; // eat the newline fgets() stores
+		strcat(buffer,",");
+		char* temp = strdup(buffer);
+		strcpy(temp,buffer);
+		char* last = temp;
+		int sortColumnInside=0;
+		while((temp = strstr(temp,","))!=NULL){
+
+			*temp='\0';
+			temp = temp+1;
+			char* trimmed = trimwhitespace(last);
+			int i = 0;
+			while(i<NUM_HEADERS){
+			    if(strcmp(trimmed,movie_headers[i])==0){
+				i=99;
+			    }
+			    i++;
+			}
+			if(i!=100){
+				return -4;
+			}
+			if(strcmp(trimmed,sortColumn)==0){
+				sortColumnInside=1;
+			}
+			printf("%s\n",last);
+			last=temp;
+			
+		}
+		if(sortColumnInside!=1){
+			return -5;
+		}
+		printf("%s\n",last);
+		break;
+         	//printf("%s/n", buffer);
+    	}
+    }
+    else{
+	return -3;
+    }
+}
+int scan(const char *name)
 {
   DIR *dir;
   struct dirent *cursor;
@@ -54,7 +107,7 @@ int listdir(const char *name)
         strcat(path,cursor->d_name);
         printf("%d,", getpid());
         fflush(stdout);
-        int subchildren = listdir(path);
+        int subchildren = scan(path);
         exit(subchildren);
         break;
       }
@@ -100,15 +153,23 @@ int listdir(const char *name)
   return children;
 }
 
+
 int main(int argc, char *argv[]) {
-  printf("%d\n",argc);
+  int cFlag = 0; 
+  char* cValue;
+  int oFlag = 0; 
+  char* oValue;
+  int dFlag = 0; 
+  char* dValue;
+  
+  /*printf("%d\n",argc);
   check_parameters(argc, argv);
   check_sort_by();
   get_directory_paths(argc, argv);
   printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
   fflush(stdout);
   // printf("PIDS of all child processes: ");
-  int end = listdir(".");
+  int end = scan(".");
   pid_t wpid;
   int status = 0;
   int sum = 0;
@@ -121,5 +182,7 @@ int main(int argc, char *argv[]) {
 	if(head==NULL){
 		printf("RIGHT");
 	}
+  */
+  printf("%s\n",argv[0]);
   return 1;
 }
