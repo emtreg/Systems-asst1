@@ -171,7 +171,9 @@ void check_file_extension() {
     }
 
     if(strcmp(extension, ".csv") == 0) {
-        check_csv_format();
+        //check_csv_format();
+        valid_csv = 1;
+        parse_csv(filename);
     }
 }
 
@@ -439,6 +441,7 @@ char* get_headers_str() {
     return headers_string;
 }
 
+/*
 
 void check_csv_format() {
 
@@ -453,7 +456,7 @@ void check_csv_format() {
     else if(valid_csv == 1) {
 
         get_headers_str();
-        movie_data *movie_node = parse_csv();
+        movie_data *movie_node = parse_csv(char);
         trim_filename();
 
     }
@@ -461,8 +464,10 @@ void check_csv_format() {
     free(headers_string);
 }
 
+*/
 
-movie_data* parse_csv() {
+
+movie_data* parse_csv(char *filename) {
 
 char *mode = "r";
 
@@ -479,6 +484,7 @@ f = fopen(filename, mode);
 
     char *tmp;
     char *row;
+    movie_data *output;
 
     row = malloc(sizeof(char) * (buffer_size+1));
     row[buffer_size++] = '\0';
@@ -500,13 +506,18 @@ f = fopen(filename, mode);
             if(row_count == 0) {
                 store_headers(tmp_str);
                 check_sort_by_csv();
-                headers_string = strdup(tmp_str);
+
+                output = malloc(sizeof(movie_data));
+                output->raw_row = strdup(tmp_str);
+                push(output);
+
                 //printf("%s\n", tmp_str);
             } else {
                 build_movie_data_node(tmp_str);
             }
 
             //printf("\"%s\"\n", trimwhitespace(tmp));
+
             free(tmp_str);
 
             buffer_size = 0;
@@ -531,9 +542,17 @@ f = fopen(filename, mode);
 
     free(row);
 
-    movie_data* n = mergeSort(front->next, sort_by);
+    if(valid_csv == 1) {
 
-    return n;
+    //printf("%s\n", front->next->raw_row);
+
+    return (front->next->next);
+
+    }
+
+    //movie_data* n = mergeSort(front->next, sort_by);
+
+    //return n;
 
     /*
 

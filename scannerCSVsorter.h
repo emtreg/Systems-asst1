@@ -86,7 +86,7 @@ typedef struct node {
     void check_sort_by_csv();
     void build_movie_data_node(char *data_str);
     void assign_output(movie_data *output, int index, char *value);
-    movie_data* parse_csv();
+    movie_data* parse_csv(char *filename);
 /*
  *  * ALWAYS CALL THIS FIRST AND CHECK FOR NULL getNumericalValue WILL FAIL IF SEARCHING FOR NON NUMERICAL VALUE
  *   */
