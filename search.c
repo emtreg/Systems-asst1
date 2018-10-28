@@ -27,7 +27,8 @@ int  listdir(const char *name)
             	strcpy(path,name);
 		strcat(path,"/");
 		strcat(path,cursor->d_name);
-		printf("%s %d\n",path, getpid() ); 
+		printf("%d,", getpid()); 
+		fflush(stdout);
 		int subchildren = listdir(path);
 		exit(subchildren);
 		break;
@@ -35,7 +36,7 @@ int  listdir(const char *name)
 	    else{
 		int status;
 		if ( waitpid(child, &status, 0) == -1 ) {
-        		perror("waitpid failed");
+        		perror("WAIT FAILED");
         		return 0;
     		}
 		children += WEXITSTATUS(status)+1;
@@ -46,10 +47,10 @@ int  listdir(const char *name)
         } 
 	else {
 	    char *suffix = strrchr(cursor->d_name, '.');
-	    if (suffix && !strcmp(suffix, ".csv")){
 		child=fork();
 		if(child==0){
-            		printf("%s %s %d\n", name, cursor->d_name, getpid());
+            		printf("%d,", cursor->d_name,getpid());
+			fflush(stdout);
 			//TODO Check for valid FORMAT
 			//TODO SORT FUNCTION HERE
 			exit(1);
@@ -59,19 +60,16 @@ int  listdir(const char *name)
 			//printf("%s %d\n",cursor->d_name, getpid() );
 			continue;	
 		}
-	    }
-	    else{
-		continue;
-	   }
         }
     }
-    printf("RETURNING %d\n",children);
     closedir(dir);
     return children;
 }
 
 int main(void) {
-    printf("Initial PID: %d\n", getpid());
+    printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
+    fflush(stdout);
+   // printf("PIDS of all child processes: ");
     int end = listdir(".");
     pid_t wpid;
     int status = 0;
@@ -79,5 +77,7 @@ int main(void) {
     while ((wpid = wait(&status)) > 0)
     {
     }
+    //fflush(stdout);
+    printf("\nTotal number of processes: %d\n",end);
     return 1;
 }
