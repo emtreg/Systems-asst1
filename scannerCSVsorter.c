@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/wait.h>
-#include "mergeSort.c"
 #include "scannerCSVsorter.h"
 int  listdir(const char *name)
 {
@@ -13,7 +12,7 @@ int  listdir(const char *name)
   struct dirent *cursor;
   int children = 0;
   if (!(dir = opendir(name)))
-  return;
+    return;
   char cwd[PATH_MAX];
   while ((cursor = readdir(dir)) != NULL) {
     pid_t child;
@@ -53,7 +52,14 @@ int  listdir(const char *name)
         printf("%d,", cursor->d_name,getpid());
         fflush(stdout);
         //TODO Check for valid FORMAT
-        movie_data* head = parse_csv();
+        char path[1024];
+        strcpy(path,name);
+        strcat(path,"/");
+        strcat(path,cursor->d_name);
+        movie_data* head = parse_csv(path);
+	if(head==NULL){
+		printf("WRONG");
+	}
         //TODO SORT FUNCTION HERE
         exit(1);
       }
