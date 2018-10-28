@@ -33,7 +33,6 @@ int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationP
 	fclose(fp);
 	return i;
 }
-
 int checkIfValid(char* path, char* sortColumn){
     if(strstr(path,"-sorted-")!=NULL)
 	return -1;
@@ -83,6 +82,7 @@ int checkIfValid(char* path, char* sortColumn){
     else{
 	return -3;
     }
+    return 1;
 }
 int scan(const char *name)
 {
@@ -155,12 +155,37 @@ int scan(const char *name)
 
 
 int main(int argc, char *argv[]) {
+  if(argc<3){
+	fprintf(stderr, "Too Few Arguments Exiting\n");
+	exit(-1);
+  }
   int cFlag = 0; 
   char* cValue;
   int oFlag = 0; 
   char* oValue;
   int dFlag = 0; 
   char* dValue;
+  int i = 1;
+  while(i<argc){
+	if(strcmp(argv[i],"-c")==0){
+		cFlag=1;
+		cValue=argv[i+1];
+	}
+	else if(strcmp(argv[i],"-o")==0){
+		oFlag=1;
+		oValue = argv[i+1];
+	}
+	else if(strcmp(argv[i],"-d")==0){
+		dFlag=1;
+		dValue = argv[i+1];
+		
+	}
+	else{
+		fprintf(stderr, "Unkown Flag\n");
+		exit(-1);
+	}
+	i+=2;	
+  }
   
   /*printf("%d\n",argc);
   check_parameters(argc, argv);
@@ -183,6 +208,5 @@ int main(int argc, char *argv[]) {
 		printf("RIGHT");
 	}
   */
-  printf("%s\n",argv[0]);
   return 1;
 }
