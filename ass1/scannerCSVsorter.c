@@ -84,7 +84,7 @@ int checkValidParamConfig( int cFlag, char* cValue, int oFlag, char* oValue, int
 int checkIfValidCSV(char* path, const char* sortColumn){
     if(strstr(path,"-sorted-")!=NULL)
 	return -1;
-    if(strcmp(strchr(path,'.'),".csv")!=0)
+    if(strcmp(strstr(path,".csv"),".csv")!=0)
 	return -2;
     FILE *fp = fopen(path,"r");
     char buffer[1024];
@@ -144,7 +144,7 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
     if (cursor->d_type == DT_DIR) {
       char path[1024];
       if (strcmp(cursor->d_name, ".") == 0 || strcmp(cursor->d_name, "..") == 0)
-        continue;
+        	continue;
       //printf("DIR %s\n",cursor->d_name);
       child = fork();
       if(child == 0){
@@ -186,7 +186,6 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
 	if(checkIfValidCSV(path,sortColumn)!=1){
 		exit(-1);
 	}
-	
         movie_data* head = parse_csv(path);
 	head->next = mergeSort(head->next,sortColumn);
 	if(oPath){
