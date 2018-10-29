@@ -668,6 +668,6 @@ printf("%s\n", filename);
 
     free(row);
 
-    return (front->next->next);
+    return (front->next);
 
 }
