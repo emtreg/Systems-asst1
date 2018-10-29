@@ -41,7 +41,7 @@ int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationP
 }
 
 int checkValidDir(char* path){
-    
+
     DIR * dir = opendir(path);
     struct dirent *ent;
     if(!dir) {
@@ -69,7 +69,7 @@ int checkValidParamConfig( int cFlag, char* cValue, int oFlag, char* oValue, int
     	return -4;
     }
     return 1;
-    
+
 }
 int checkIfValidCSV(char* path, const char* sortColumn){
     if(strstr(path,"-sorted-")!=NULL)
@@ -166,34 +166,17 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
       char *suffix = strrchr(cursor->d_name, '.');
       child=fork();
       if(child==0){
-<<<<<<< HEAD
-=======
-
->>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
         //TODO Check for valid FORMAT
         char path[1024];
         strcpy(path,dPath);
         strcat(path,"/");
         strcat(path,cursor->d_name);
-<<<<<<< HEAD
-	printf("%d,", getpid());
+	      printf("%d,", getpid());
         fflush(stdout);
-	if(checkIfValidCSV(path,sortColumn)!=1){
-		exit(-1);
-	}
+	      if(checkIfValidCSV(path,sortColumn)!=1){
+		        exit(-1);
+	      }
         movie_data* head = parse_csv(path);
-=======
-	//printf("%s %d,", path,getpid());
-        fflush(stdout);
-        //movie_data* head = parse_csv(path);
-        /*
->>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
-	if(head!=NULL){
-		printf("RIGHT");
-	}
-	*/
-        //TODO SORT FUNCTION HERE
-        //free(path);
         exit(1);
       }
       else{
@@ -226,57 +209,42 @@ int main(int argc, char *argv[]) {
   char* dValue;
   int i = 1;
   while(i<argc){
-	if(strcmp(argv[i],"-c")==0){
-		cFlag=1;
-		cValue=argv[i+1];
-	}
-	else if(strcmp(argv[i],"-o")==0){
-		oFlag=1;
-		oValue = argv[i+1];
-	}
-	else if(strcmp(argv[i],"-d")==0){
-		dFlag=1;
-		dValue = argv[i+1];
+  	if(strcmp(argv[i],"-c")==0){
+  		cFlag=1;
+  		cValue=argv[i+1];
+  	}
+  	else if(strcmp(argv[i],"-o")==0){
+  		oFlag=1;
+  		oValue = argv[i+1];
+  	}
+  	else if(strcmp(argv[i],"-d")==0){
+  		dFlag=1;
+  		dValue = argv[i+1];
 
-	}
-	else{
-		errorOut("Unkown flag exiting");
-		//fprintf(stderr, "Unkown Flag\n");
-	}
-	i+=2;
-<<<<<<< HEAD
+  	}
+  	else{
+  		errorOut("Unkown flag exiting");
+  		//fprintf(stderr, "Unkown Flag\n");
+  	}
+  	i+=2;
   }
   int paramCode = checkValidParamConfig(cFlag, cValue, oFlag, oValue, dFlag, dValue);
   if(paramCode == -2 || paramCode == -3){
-	errorOut("Invalid Directory as arg exiting");
+	   errorOut("Invalid Directory as arg exiting");
   }
   if(paramCode == -1){
-	errorOut("No -c flag exiting");
+	   errorOut("No -c flag exiting");
   }
   if(paramCode==-4){
-	errorOut("Invalid column heading exiting");
+	   errorOut("Invalid column heading exiting");
   }
   if(dFlag == 0){
-	dValue = ".";
+	   dValue = ".";
   }
   if(oFlag == 0){
-	oValue = NULL;
+	   oValue = NULL;
   }
-=======
-  }
-
->>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
-  /*printf("%d\n",argc);
-
-  check_parameters(argc, argv);
-  check_sort_by();
-  get_directory_paths(argc, argv);
-<<<<<<< HEAD
-  */
   printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
-=======
-  //printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
->>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
   fflush(stdout);
   int end = scan(dValue,oValue,cValue);
   pid_t wpid;
@@ -284,19 +252,7 @@ int main(int argc, char *argv[]) {
   while ((wpid = wait(&status)) > 0)
   {
   }
-  //fflush(stdout);
-<<<<<<< HEAD
   printf("\nTotal number of processes: %d\n",end);
-=======
-  //printf("\nTotal number of processes: %d\n",end);
-
-  movie_data* head = parse_csv("movie_metadata.csv");
-
-	if(head==NULL){
-		printf("RIGHT");
-	}
-  */
->>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
   return 1;
 
 }
