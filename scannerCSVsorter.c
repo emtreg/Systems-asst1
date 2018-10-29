@@ -22,7 +22,7 @@ int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationP
     	while(path[i] != '\0')
     	{
         	i++;
-         
+
     	}
     	path[i-4] = '\0';
 	strcat(path,"-sorted-");
@@ -80,7 +80,7 @@ int checkIfValidCSV(char* path, const char* sortColumn){
     char buffer[1024];
     if(fp){
 	while (fgets(buffer, sizeof(buffer), fp) != NULL)
-    	{	
+    	{
         	buffer[strlen(buffer) - 1] = '\0'; // eat the newline fgets() stores
 		strcat(buffer,",");
 		char* temp = strdup(buffer);
@@ -107,7 +107,7 @@ int checkIfValidCSV(char* path, const char* sortColumn){
 			}
 			printf("%s\n",last);
 			last=temp;
-			
+
 		}
 		if(sortColumnInside!=1){
 			return -5;
@@ -143,7 +143,7 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
         strcpy(path,dPath);
         strcat(path,"/");
         strcat(path,cursor->d_name);
-        printf("%d,", getpid());
+        //printf("%d,", getpid());
         fflush(stdout);
         int subchildren = scan(path,oPath,sortColumn);
         //free(path);
@@ -166,20 +166,32 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
       char *suffix = strrchr(cursor->d_name, '.');
       child=fork();
       if(child==0){
+<<<<<<< HEAD
+=======
+
+>>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
         //TODO Check for valid FORMAT
         char path[1024];
         strcpy(path,dPath);
         strcat(path,"/");
         strcat(path,cursor->d_name);
+<<<<<<< HEAD
 	printf("%d,", getpid());
         fflush(stdout);
 	if(checkIfValidCSV(path,sortColumn)!=1){
 		exit(-1);
 	}
         movie_data* head = parse_csv(path);
+=======
+	//printf("%s %d,", path,getpid());
+        fflush(stdout);
+        //movie_data* head = parse_csv(path);
+        /*
+>>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
 	if(head!=NULL){
 		printf("RIGHT");
 	}
+	*/
         //TODO SORT FUNCTION HERE
         //free(path);
         exit(1);
@@ -197,17 +209,20 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
 
 
 int main(int argc, char *argv[]) {
+
+  printf("%d\n",argc);
+
   if(argc<3){
 	errorOut("Too few arguments exiting");
   }
   if(argc%2==0){
 	errorOut("Missing value exiting");
   }
-  int cFlag = 0; 
+  int cFlag = 0;
   char* cValue;
-  int oFlag = 0; 
+  int oFlag = 0;
   char* oValue;
-  int dFlag = 0; 
+  int dFlag = 0;
   char* dValue;
   int i = 1;
   while(i<argc){
@@ -222,13 +237,14 @@ int main(int argc, char *argv[]) {
 	else if(strcmp(argv[i],"-d")==0){
 		dFlag=1;
 		dValue = argv[i+1];
-		
+
 	}
 	else{
 		errorOut("Unkown flag exiting");
 		//fprintf(stderr, "Unkown Flag\n");
 	}
 	i+=2;
+<<<<<<< HEAD
   }
   int paramCode = checkValidParamConfig(cFlag, cValue, oFlag, oValue, dFlag, dValue);
   if(paramCode == -2 || paramCode == -3){
@@ -246,12 +262,21 @@ int main(int argc, char *argv[]) {
   if(oFlag == 0){
 	oValue = NULL;
   }
+=======
+  }
+
+>>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
   /*printf("%d\n",argc);
+
   check_parameters(argc, argv);
   check_sort_by();
   get_directory_paths(argc, argv);
+<<<<<<< HEAD
   */
   printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
+=======
+  //printf("Initial PID: %d\nPIDS of all child processes: ", getpid());
+>>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
   fflush(stdout);
   int end = scan(dValue,oValue,cValue);
   pid_t wpid;
@@ -260,6 +285,18 @@ int main(int argc, char *argv[]) {
   {
   }
   //fflush(stdout);
+<<<<<<< HEAD
   printf("\nTotal number of processes: %d\n",end);
+=======
+  //printf("\nTotal number of processes: %d\n",end);
+
+  movie_data* head = parse_csv("movie_metadata.csv");
+
+	if(head==NULL){
+		printf("RIGHT");
+	}
+  */
+>>>>>>> 47b5904215345ea5d4069438edb7ac18bc703dec
   return 1;
+
 }
