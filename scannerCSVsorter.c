@@ -176,7 +176,14 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
 	      if(checkIfValidCSV(path,sortColumn)!=1){
 		        exit(-1);
 	      }
+	printf("VALID %s\n",path);
         movie_data* head = parse_csv(path);
+	head = mergeSort(head,sortColumn);
+	while(head!=NULL){
+		printf("%s-->",head->raw_row);	
+		head = head->next;
+	}
+	printf("\n");	
         exit(1);
       }
       else{

@@ -632,7 +632,6 @@ printf("%s\n", filename);
 
             if(row_count == 0) {
                 store_headers(tmp_str, header_comma_count);
-                check_sort_by_csv();
 
                 output = malloc(sizeof(movie_data));
                 output->raw_row = strdup(tmp_str);
