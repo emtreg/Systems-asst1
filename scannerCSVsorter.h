@@ -368,7 +368,6 @@ void check_file_extension(DIR *dir, char *path) {
             //check_csv_format();
             printf("%s\n", filename);
             //valid_csv = 1;
-            checkIfValid(filename);
             //parse_csv(filename);
     }
 
