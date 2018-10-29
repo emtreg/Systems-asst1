@@ -368,6 +368,7 @@ void check_file_extension(DIR *dir, char *path) {
             //check_csv_format();
             printf("%s\n", filename);
             //valid_csv = 1;
+            checkIfValid(filename);
             //parse_csv(filename);
     }
 
@@ -459,17 +460,12 @@ void store_headers(char *headers, int header_comma_count) {
     int count = 0;
     int index = 0;
     int i = 0;
-    int comma_count = 0;
-    int n = 0;
-    int m =0;
-    int header_match = 0;
 
     char header[str_length];
 
     for(i = 0; i < str_length; i++) {
 
         if(headers[i] == ',') {
-            comma_count++;
             header[index] = '\0';
             strcpy(headers_array[count++], trimwhitespace(header));
             strcpy(header,"");
@@ -486,61 +482,8 @@ void store_headers(char *headers, int header_comma_count) {
     header[index] = '\0';
     strcpy(headers_array[count++], trimwhitespace(header));
 
-    /*
-
-    while(strcmp(headers_array[n], "") != 0) {
-
-
-
-        for(m = 0; m <= 27; m++) {
-
-            if(strcmp(headers_array[n], movie_headers[m]) == 0) {
-                header_match = 1;
-                printf("%s\n", headers_array[n]);
-                break;
-            }
-        }
-
-        if(header_match == 0) {
-            valid_csv = 0;
-            printf("Here\n");
-            printf("%s\n", headers_array[n]);
-            return;
-        }
-
-
-        header_match = 0;
-        n++;
-    }
-
-    */
-
-    header_comma_count = comma_count;
 }
 
-
-
-void check_sort_by_csv() {
-
-    int i = 0;
-    int match_found = 0;
-
-    for(i = 0; i < NUM_HEADERS; i ++) {
-        if(strcmp(headers_array[i], sort_by) == 0) {
-            int pos_sort = i;
-            match_found = 1;
-        }
-    }
-
-    /*
-    if(match_found == 0) {
-        valid_csv = 0;
-        return;
-    }
-
-    */
-
-}
 
 void build_movie_data_node(char *data_str, int header_comma_count) {
 
@@ -550,7 +493,6 @@ void build_movie_data_node(char *data_str, int header_comma_count) {
     int count = 0;
     int char_count = 0;
     int double_quote_mode = 1;
-    int comma_count = 0;
 
     movie_data *output;
     output = malloc(sizeof(movie_data));
@@ -564,7 +506,6 @@ void build_movie_data_node(char *data_str, int header_comma_count) {
                 double_quote_mode = 1;
             }
         } else if(data_str[i] == ',' && double_quote_mode == 1) {
-            comma_count++;
             row_element[char_count] = '\0';
             assign_output(output, count++, row_element);
             strcpy(row_element, "");
@@ -573,16 +514,6 @@ void build_movie_data_node(char *data_str, int header_comma_count) {
             row_element[char_count++] = data_str[i];
         }
     }
-
-    /*
-    if(comma_count != header_comma_count) {
-        valid_csv = 0;
-        return;
-    }
-
-    */
-
-    comma_count = 0;
 
     row_element[char_count] = '\0';
     assign_output(output, count, row_element);
@@ -657,31 +588,6 @@ char* get_headers_str() {
 
     return headers_string;
 }
-
-/*
-
-void check_csv_format() {
-
-    valid_csv = 1;
-
-    parse_csv();
-
-    if(valid_csv == 0) {
-        return;
-    }
-
-    else if(valid_csv == 1) {
-
-        get_headers_str();
-        movie_data *movie_node = parse_csv(char);
-        trim_filename();
-
-    }
-
-    free(headers_string);
-}
-
-*/
 
 
 movie_data* parse_csv(char *filename) {
@@ -764,28 +670,6 @@ printf("%s\n", filename);
 
     free(row);
 
-    //if(valid_csv == 1) {
-
-    //printf("%s\n", front->raw_row);
-
-    return (front->next);
-
-    //}
-
-    //movie_data* n = mergeSort(front->next, sort_by);
-
-    //return n;
-
-    /*
-
-    while (n != NULL)
-    {
-        printf("%s\n", n->raw_row);
-        n = n->next;
-    }
-
-    */
-
-    return 0;
+    return (front->next->next);
 
 }

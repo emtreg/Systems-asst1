@@ -193,6 +193,7 @@ int main(int argc, char *argv[]) {
   }
 
   /*printf("%d\n",argc);
+
   check_parameters(argc, argv);
   check_sort_by();
   get_directory_paths(argc, argv);
