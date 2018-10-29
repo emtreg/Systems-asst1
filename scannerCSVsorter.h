@@ -342,7 +342,6 @@ void check_directory_exists(DIR *dir, char* path) {
 
         } else {
 
-        printf("Directory exists.\n");
         }
 
     closedir(dir);
@@ -366,7 +365,6 @@ void check_file_extension(DIR *dir, char *path) {
 
             if(strcmp(extension, ".csv") == 0) {
             //check_csv_format();
-            printf("%s\n", filename);
             //valid_csv = 1;
             //parse_csv(filename);
     }
@@ -635,7 +633,6 @@ f = fopen(filename, mode);
                 output->raw_row = strdup(tmp_str);
                 push(output);
 
-                printf("%s\n", tmp_str);
             } else {
                 build_movie_data_node(tmp_str, header_comma_count);
             }
