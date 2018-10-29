@@ -591,7 +591,6 @@ char* get_headers_str() {
 
 movie_data* parse_csv(char *filename) {
 
-printf("%s\n", filename);
 
 char *mode = "r";
 
@@ -599,7 +598,6 @@ FILE *f;
 
 f = fopen(filename, mode);
 
-printf("%s\n", filename);
 
     front = NULL;
     front = malloc(sizeof(movie_data)); //initialization and memory allocation for front node

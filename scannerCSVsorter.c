@@ -13,10 +13,16 @@ void errorOut(char* error){
 	fprintf(stderr, "%s\n",error); exit(-1);
 }
 
+int endsWithSlash(const char *str)
+{
+    return (str && *str && str[strlen(str) - 1] == '/') ? 0 : 1;
+}
+
 int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationPath){
 	char path[1024];
 	strcpy(path,destinationPath);
-	strcat(path,"/");
+	if(!endsWithSlash(path))
+		strcat(path,"/");
 	strcat(path,name);
 	int i = 0;
     	while(path[i] != '\0')
@@ -31,8 +37,10 @@ int writeFile(char* name, movie_data* head,char* sortingHead, char* destinationP
 	FILE *fp = fopen(name, "ab+");
 	movie_data* cur = head;
 	i=0;
+	printf("%s\n",cur->raw_row);
 	while(cur!=NULL){
 		fprintf(fp,"%s\n",cur->raw_row);
+		printf("%s\n",cur->raw_row);
 		cur = cur->next;
 		i++;
 	}
@@ -105,7 +113,6 @@ int checkIfValidCSV(char* path, const char* sortColumn){
 			if(strcmp(trimmed,sortColumn)==0){
 				sortColumnInside=1;
 			}
-			printf("%s\n",last);
 			last=temp;
 
 		}
@@ -169,16 +176,24 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
         //TODO Check for valid FORMAT
         char path[1024];
         strcpy(path,dPath);
-        strcat(path,"/");
+	if(!endsWithSlash(path))
+        	strcat(path,"/");
         strcat(path,cursor->d_name);
-	      printf("%d,", getpid());
+	printf("%d,", getpid());
         fflush(stdout);
-	      if(checkIfValidCSV(path,sortColumn)!=1){
-		        exit(-1);
-	      }
-	printf("VALID %s\n",path);
+	if(checkIfValidCSV(path,sortColumn)!=1){
+		exit(-1);
+	}
+	if(oPath!=NULL){
+		strcpy(path,oPath);
+	}
+	else{
+		strcpy(path,dPath);
+	}
         movie_data* head = parse_csv(path);
-	head = mergeSort(head,sortColumn);
+	printf("continue");
+	head->next = mergeSort(head->next,sortColumn);
+	writeFile(cursor->d_name,head,sortColumn,oPath);
 	while(head!=NULL){
 		printf("%s-->",head->raw_row);	
 		head = head->next;
@@ -196,7 +211,6 @@ int scan(const char *dPath, const char *oPath, const char *sortColumn)
   closedir(dir);
   return children;
 }
-
 
 int main(int argc, char *argv[]) {
 
